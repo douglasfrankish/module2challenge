@@ -1,0 +1,110 @@
+Sub Try()
+
+Dim brand_name As String
+Dim summary_table As Integer
+summary_table = 2
+Dim total_volume As Double
+Dim volume As Double
+total_volume = 0
+volume = 0
+Dim percent As Double
+percent = 0
+Dim increase As Double
+Dim decrease As Double
+Dim greatest_volume As Double
+Dim increase_ticker As String
+Dim decrease_ticker As String
+Dim volume_ticker As String
+Dim WorksheetName As String
+Dim ws_num As Integer
+Dim ws As Worksheet
+Dim RowCount As Double
+Dim lastrow As Double
+Dim lastrowL As Double
+Dim opening_price As Double
+Dim closing_price As Double
+Dim price_change As Double
+
+For Each ws In Worksheets
+RowCount = ws.Cells(Rows.Count, "A").End(xlUp).Row
+lastrow = ws.Cells(Rows.Count, "K").End(xlUp).Row
+lastrowL = ws.Cells(Rows.Count, "L").End(xlUp).Row
+summary_table = 2
+
+For i = 2 To RowCount
+
+    volume = ws.Cells(i, 7).Value
+    total_volume = total_volume + volume
+
+    lastrow = ws.Cells(Rows.Count, "K").End(xlUp).Row
+    lastrowL = ws.Cells(Rows.Count, "L").End(xlUp).Row
+    
+    If ws.Cells(i - 1, 1).Value <> ws.Cells(i, 1).Value Then
+    opening_price = ws.Cells(i, 3).Value
+    End If
+    
+    If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+    ws.Range("L" & summary_table).Value = total_volume
+    
+    total_volume = 0
+    brand_name = ws.Cells(i, 1).Value
+    ws.Range("I" & summary_table).Value = brand_name
+    closing_price = ws.Cells(i, 6).Value
+    price_change = closing_price - opening_price
+    ws.Range("J" & summary_table).Value = price_change
+    percent = price_change / opening_price * 100
+    ws.Range("K" & summary_table).Value = percent
+    
+        If ws.Range("J" & summary_table).Value < 0 Then
+        ws.Range("J" & summary_table).Interior.Color = RGB(255, 0, 0)
+        ElseIf ws.Range("J" & summary_table).Value > 0 Then
+        ws.Range("J" & summary_table).Interior.Color = RGB(0, 255, 0)
+        End If
+        
+        If ws.Range("K" & summary_table).Value < 0 Then
+        ws.Range("K" & summary_table).Interior.Color = RGB(255, 0, 0)
+        ElseIf ws.Range("K" & summary_table).Value > 0 Then
+        ws.Range("K" & summary_table).Interior.Color = RGB(0, 255, 0)
+        End If
+        
+    summary_table = summary_table + 1
+    End If
+
+  Next i
+    
+    increase = WorksheetFunction.Max(ws.Range("K2:K" & lastrow))
+    decrease = WorksheetFunction.Min(ws.Range("K2:K" & lastrow))
+    greatest_volume = WorksheetFunction.Max(ws.Range("L2:L" & lastrowL))
+  
+    ws.Cells(2, 17).Value = increase
+    ws.Cells(3, 17).Value = decrease
+    ws.Cells(4, 17).Value = greatest_volume
+
+    
+   Dim RowCount2 As Long
+   RowCount2 = Cells(Rows.Count, "I").End(xlUp).Row
+   
+  For j = 2 To RowCount2
+    If ws.Cells(j, "K").Value = increase Then
+    increase_ticker = ws.Cells(j, "I").Value
+    End If
+      
+    If ws.Cells(j, "K").Value = decrease Then
+    decrease_ticker = ws.Cells(j, "I").Value
+    End If
+    
+    If ws.Cells(j, "L").Value = greatest_volume Then
+    volume_ticker = ws.Cells(j, "I").Value
+      
+    End If
+    
+  Next j
+ 
+    ws.Cells(2, 16).Value = increase_ticker
+    ws.Cells(3, 16).Value = decrease_ticker
+    ws.Cells(4, 16).Value = volume_ticker
+  
+  
+  Next ws
+
+End Sub
